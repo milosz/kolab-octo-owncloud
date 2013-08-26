@@ -41,6 +41,14 @@ if (!OC_User::isLoggedIn() && !empty($_GET['kolab_auth'])) {
 		$_SERVER['PHP_AUTH_USER'] = $auth['user'];
 		$_SERVER['PHP_AUTH_PW']   = $auth['pass'];
 	}
+
+	OC_App::loadApps(array('authentication'));
+	if (OC_User::login($_SERVER["PHP_AUTH_USER"], $_SERVER["PHP_AUTH_PW"])) {
+		//OC_Log::write('core',"Logged in with HTTP Authentication", OC_Log::DEBUG);
+		OC_User::unsetMagicInCookie();
+		$_SERVER['HTTP_REQUESTTOKEN'] = OC_Util::callRegister();
+	}
+
 }
 
 function oc_kolab_decode($str)
