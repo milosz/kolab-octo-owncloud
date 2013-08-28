@@ -36,18 +36,10 @@ if (!OC_User::isLoggedIn() && !empty($_GET['kolab_auth'])) {
 	$url = !empty($_SERVER['HTTP_REFERER']) ? dirname($_SERVER['HTTP_REFERER']) . '/' : OC_Config::getValue('kolaburl', '');
 	$auth = @json_decode(file_get_contents($url . '?_action=owncloudsso', false, $context), true);
 
-	// fake HTTP authentication with user credentials received from Roundcube
-	if ($auth['user'] && $auth['pass']) {
-		$_SERVER['PHP_AUTH_USER'] = $auth['user'];
-		$_SERVER['PHP_AUTH_PW']   = $auth['pass'];
-	}
-
 	OC_App::loadApps(array('authentication'));
-	if (OC_User::login($_SERVER["PHP_AUTH_USER"], $_SERVER["PHP_AUTH_PW"])) {
-		//OC_Log::write('core',"Logged in with HTTP Authentication", OC_Log::DEBUG);
-		OC_User::unsetMagicInCookie();
-		$_SERVER['HTTP_REQUESTTOKEN'] = OC_Util::callRegister();
-	}
+        if (OC_User::login($auth['user'], $auth['pass'])) {
+                OC_Log::write('core',"User \"" . $auth['user'] . "\" logged in with Kolab SSO Authentication", OC_Log::DEBUG);
+        }
 
 }
 
