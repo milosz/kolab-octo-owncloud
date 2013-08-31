@@ -36,7 +36,6 @@ class owncloud extends rcube_plugin
 
         // register actions
         $this->register_action('index', array($this, 'action'));
-        $this->register_action('embed', array($this, 'embed'));
         $this->add_hook('session_destroy', array($this, 'logout'));
 
         // handler for sso requests sent by the owncloud kolab_auth app
@@ -56,9 +55,6 @@ class owncloud extends rcube_plugin
         // add style for taskbar button (must be here) and Help UI
         $this->include_stylesheet($this->local_skin_path()."/owncloud.css");
 
-        if ($rcmail->task == 'owncloud' || $rcmail->action == 'compose') {
-            $this->include_script('owncloud.js');
-        }
     }
 
     function action()
@@ -68,13 +64,6 @@ class owncloud extends rcube_plugin
         $rcmail->output->add_handlers(array('owncloudframe' => array($this, 'frame')));
         $rcmail->output->set_pagetitle($this->gettext('owncloud'));
         $rcmail->output->send('owncloud.owncloud');
-    }
-
-    function embed()
-    {
-        $rcmail = rcmail::get_instance();
-        $rcmail->output->command('plugin.owncloudembed', $this->frame());
-        $rcmail->output->send();
     }
 
     function frame()
